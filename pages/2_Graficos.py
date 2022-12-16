@@ -21,7 +21,7 @@ with st.sidebar:
   comunas_ordenadas = data_proyectos["COMUNA"].sort_values().unique()
   
   comuna_selector = st.multiselect(
-    label="Proyectos por Comunas",
+    label="Comunas",
     options=comunas_ordenadas,
     default=[]
   )
@@ -32,19 +32,22 @@ with st.sidebar:
   tipo_ordenadas = data_proyectos["TIPO PROYECTO"].sort_values().unique()  
 
   tipo_selector = st.multiselect(
-    label="Tipo habitacional por Comuna",
+    label="Proyectos Habitacionales por Comuna",
     options=tipo_ordenadas,
     default=[]
   )
   
   if not tipo_selector:
     tipo_selector = tipo_ordenadas.tolist()
+
+  geo_data = data_proyectos.query("COMUNA == @comuna_selector")
     
 
 col_bar, col_pie, col_line = st.columns(3, gap="small")
 
 group_comuna = data_proyectos.groupby(["COMUNA"]).size()
 group_comuna.sort_values(axis="index", ascending=False, inplace=True)
+top10 = group_comuna[0:10]
 
 def formato_porciento(dato: float):
   return f"{round(dato, ndigits=2)}%"
@@ -63,7 +66,7 @@ with col_bar:
 
 with col_pie:
   pie = plt.figure()
-  group_comuna.plot.pie(
+  top10.plot.pie(
     y="index",
     title="Cantidad por Comuna",
     legend=None,
@@ -73,12 +76,13 @@ with col_pie:
 
 with col_line:
   line = plt.figure()
-  group_comuna.plot.line(
-    title="Cantidad de Puntos de Carga por Horario",
+  top10.plot.line(
+    title="Cantidad por Comuna",
     label="Total de Puntos",
-    xlabel="Horarios",
-    ylabel="Puntos de Carga",
-    color="lightblue",
+    xlabel="Comuna",
+    ylabel="Cantidad",
+    color="red",
     grid=True
   ).plot()
-  st.pyplot(line)  
+  st.pyplot(line)
+
