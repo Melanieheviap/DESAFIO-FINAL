@@ -5,6 +5,7 @@ import os
 import requests
 from dotenv import load_dotenv
 import json
+from sqlalchemy import create_engine
 
 fecha_actual = date.today()
 print(fecha_actual)
@@ -25,6 +26,14 @@ correccion_columnas.dropna(subset=["COMUNA"], inplace=True)
 
 correccion_columnas['FECHA DE PROCESO'] = fecha_actual
 print("Nueva Columna", correccion_columnas)
+
+correccion_columnas["CLIMA"] = "por definir"
+
+correccion_columnas.to_excel("BBDD_MODIF.xlsx")
+correccion_columnas.to_csv("BBDD_MODIF.csv", encoding="utf-8")
+
+
+###############################
 
 load_dotenv()
 WEATHER_API_KEY=os.getenv("API_KEY", "123APIKEY")
